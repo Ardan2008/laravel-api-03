@@ -36,11 +36,11 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'Product retrieved successfully',
-            'data' => new ProductResource($product)
-        ], Response::HTTP_OK);
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Product retrieved successfully',
+        //     'data' => new ProductResource($product)
+        // ], Response::HTTP_OK);
     }
 
 

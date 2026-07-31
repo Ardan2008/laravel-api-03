@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/products', [ProductController::class, 'index'])->name('product');
 Route::post('/products', [ProductController::class, 'store'])->name('product.store');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('product.update');
-Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+Route::patch('/products/{product}', [ProductController::class, 'update'])->name('product.patch');
+
+Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('product.destroy'); 
