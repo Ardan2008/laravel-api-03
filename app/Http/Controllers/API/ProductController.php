@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Http\Resources\ProductCollection;
+// use App\Http\Resources\ProductCollection;
 use App\Models\Product;
 use Illuminate\Http\Response;
 
@@ -13,10 +13,9 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(10);
-
+        $products = Product::with('kategori')->latest()->paginate(10);
         return response()->json(
-            new ProductCollection($products),
+            ProductResource::collection($products),
             Response::HTTP_OK
         );
     }
@@ -36,11 +35,11 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Product retrieved successfully',
-        //     'data' => new ProductResource($product)
-        // ], Response::HTTP_OK);
+        return response()->json([
+            'status' => true,
+            'message' => 'Product retrieved successfully',
+            'data' => new ProductResource($product)
+        ], Response::HTTP_OK);
     }
 
 

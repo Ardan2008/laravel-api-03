@@ -14,10 +14,11 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|numeric',
-            'description' => 'sometimes|nullable|string',
-            'stock' => 'sometimes|required|integer|min:0',
+            'id_kategori' => 'required|exists:kategoris,id',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'description' => 'nullable|string',
+            'stock' => 'required|integer|min:0',
         ];
     }
 }
