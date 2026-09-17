@@ -16,7 +16,7 @@ class ProductRequest extends FormRequest
         return [
             'id_kategori' => 'required|exists:kategoris,id',
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
+            'price' => ['required', 'regex:/^\d{1,3}(\.\d{3})*$/'],
             'description' => 'nullable|string',
             'stock' => 'required|integer|min:0',
         ];
