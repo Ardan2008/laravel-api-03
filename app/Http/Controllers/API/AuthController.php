@@ -56,11 +56,21 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
+        // beri tahu user ketika email-nya memang belum terdaftar
+        $email = (string) $request->input('email', '');
+
+        if ($email !== '' && !User::where('email', $email)->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akun dengan email ini tidak ditemukan'
+            ], 401);
+        }
+
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Invalid credentials'
+                    'message' => 'Email atau password salah'
                 ], 401);
             }
         } catch (JWTException $e) {
@@ -123,5 +133,50 @@ class AuthController extends Controller
 
             ], 500);
         }
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation Failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Token is invalid or expired',
+                    'error' => $e->getMessage()
+                ],
+                401
+            );
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password saat ini tidak sesuai'
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password updated successfully'
+        ]);
     }
 }
