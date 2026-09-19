@@ -16,22 +16,19 @@ class Product extends Model
         'description',
     ];
 
+    protected $casts = [
+        'price' => 'integer',
+    ];
+
     protected function price(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => $this->normalizeRupiah($value),
+            set: function (string $value) {
+                $digits = preg_replace('/\D/', '', $value);
+
+                return (int) ($digits === null || $digits === '' ? 0 : $digits);
+            },
         );
-    }
-
-    private function normalizeRupiah(string $value): string
-    {
-        $digits = preg_replace('/\D/', '', $value);
-
-        if ($digits === null || $digits === '') {
-            return '0';
-        }
-
-        return number_format((int) $digits, 0, ',', '.');
     }
 
     public function kategori()

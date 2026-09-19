@@ -14,7 +14,7 @@ class ProductResource extends JsonResource
             'id_kategori' => $this->id_kategori,
             'kategori' => $this->kategori?->name,
             'name' => $this->name,
-            'price' => 'Rp ' . $this->price,
+            'price' => (int) $this->price,
             'description' => $this->description,
             'stock' => $this->stock,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
