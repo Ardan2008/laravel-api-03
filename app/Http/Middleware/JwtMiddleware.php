@@ -3,9 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Exception;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtMiddleware
 {
@@ -13,7 +13,7 @@ class JwtMiddleware
     {
         try {
             JWTAuth::parseToken()->authenticate();
-        } catch (Exception $e) {
+        } catch (JWTException) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 

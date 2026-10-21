@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KategoriRequest;
 use App\Http\Resources\KategoriResource;
-// use App\Http\Resources\ProductCollection;
 use App\Models\Kategori;
 use Illuminate\Http\Response;
 
@@ -13,7 +12,7 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori::latest()->paginate(10);
+        $kategoris = Kategori::latest()->get();
         return response()->json(
             KategoriResource::collection($kategoris),
             Response::HTTP_OK
@@ -26,7 +25,7 @@ class KategoriController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Kategori created successfully',
+            'message' => 'Category created successfully',
             'data' => new KategoriResource($kategori),
         ], Response::HTTP_CREATED);
     }
@@ -35,7 +34,7 @@ class KategoriController extends Controller
     {
         return response()->json([
             'status' => true,
-            'message' => 'Kategori retrieved successfully',
+            'message' => 'Category retrieved successfully',
             'data' => new KategoriResource($kategori),
         ], Response::HTTP_OK);
     }
@@ -46,18 +45,26 @@ class KategoriController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Kategori updated successfully',
+            'message' => 'Category updated successfully',
             'data' => new KategoriResource($kategori),
         ], Response::HTTP_OK);
     }
 
     public function destroy(Kategori $kategori)
     {
+        // foreign key di DB juga menolak, tapi dicek di sini supaya pesannya ramah
+        if ($kategori->products()->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category is still used by existing products. Move or delete those products first.',
+            ], Response::HTTP_CONFLICT);
+        }
+
         $kategori->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Kategori deleted successfully',
+            'message' => 'Category deleted successfully',
         ], Response::HTTP_OK);
     }
 }

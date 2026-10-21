@@ -17,6 +17,9 @@ class ProductResource extends JsonResource
             'price' => (int) $this->price,
             'description' => $this->description,
             'stock' => $this->stock,
+            'image' => $this->image,
+            // pakai url() supaya ikut host+port request, bukan APP_URL yang bisa berbeda
+            'image_url' => $this->image ? url('/storage/' . $this->image) : null,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

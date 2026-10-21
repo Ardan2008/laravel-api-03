@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -53,24 +54,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
 
         $credentials = $request->only('email', 'password');
-
-        // beri tahu user ketika email-nya memang belum terdaftar
-        $email = (string) $request->input('email', '');
-
-        if ($email !== '' && !User::where('email', $email)->exists()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Akun dengan email ini tidak ditemukan'
-            ], 401);
-        }
 
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Email atau password salah'
+                    'message' => 'The email or password is incorrect'
                 ], 401);
             }
         } catch (JWTException $e) {
@@ -166,7 +165,7 @@ class AuthController extends Controller
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Password saat ini tidak sesuai'
+                'message' => 'The current password does not match'
             ], 422);
         }
 
